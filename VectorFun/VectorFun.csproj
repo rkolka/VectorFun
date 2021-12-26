@@ -61,10 +61,18 @@
     <Content Include="VectorFun.readme.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="VectorFunBase.sql" />
-    <Content Include="VectorFunConstants.sql" />
-    <Content Include="VectorFunGeom.sql" />
-    <Content Include="VectorFunTest.sql" />
+    <Content Include="VectorFunBase.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VectorFunConstants.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VectorFunGeom.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VectorFunTest.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="VectorFun.install.bat">

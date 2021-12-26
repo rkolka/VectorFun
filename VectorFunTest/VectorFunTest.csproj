@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>VectorFunTest</RootNamespace>
     <AssemblyName>VectorFunTest</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -57,9 +57,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReplaceMe\ReplaceMe.csproj">
-      <Project>{16fe5a6c-dd8e-4370-be8e-d6ea11d6d80f}</Project>
-      <Name>ReplaceMe</Name>
+    <ProjectReference Include="..\VectorFun\VectorFun.csproj">
+      <Project>{6d38b135-aa4a-4e53-9c86-2986626936ab}</Project>
+      <Name>VectorFun</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
