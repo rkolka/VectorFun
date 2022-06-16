@@ -1,16 +1,54 @@
 ﻿-- $manifold$
 -- $include$ [VectorFunBase.sql]
 
-
+-- GEOM -> FLOAT64
 -- Short accessors of individual coord values. First Coord of any geom.
 FUNCTION x(@g GEOM) FLOAT64 AS VectorValue( GeomCoordXY(@g, 0), 0) END ;
 FUNCTION y(@g GEOM) FLOAT64 AS VectorValue( GeomCoordXY(@g, 0), 1) END ;
 FUNCTION z(@g GEOM) FLOAT64 AS VectorValue( GeomCoordXYZ(@g, 0), 2) END ;
 
--- Analogous to M8 CentroidX/CentroidX
+-- Center coords of geom, analogous to M8 CentroidX/CentroidX
 FUNCTION cx(@g GEOM) FLOAT64 AS VectorValue( GeomCenter(@g, 0), 0) END ;
 FUNCTION cy(@g GEOM) FLOAT64 AS VectorValue( GeomCenter(@g, 0), 1) END ;
 
+
+
+-- GEOM -> FLOAT64XN
+
+-- center coord of any 2D geom to vector
+FUNCTION cxy(@g GEOM) FLOAT64X2 AS VectorMakeX2( VectorValue(GeomCenter(@g, 0), 0), VectorValue(GeomCenter(@g, 0), 1) ) END ;
+
+-- 1st coord of any 2D geom to vector
+FUNCTION xy0(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
+-- 1st coord of any 3D geom to vector
+FUNCTION xyz0(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 0) END ;
+
+-- 2nd coord of any 2D geom to vector
+FUNCTION xy2(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 1) END ;
+-- 2nd coord of any 3D geom to vector
+FUNCTION xyz2(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 1) END ;
+
+
+-- 2nd to last coord of any 2D geom to vector
+FUNCTION xyN1(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, GeomCoordCount(@g)-2) END ;
+-- 2nd to last coord of any 3D geom to vector
+FUNCTION xyzN1(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, GeomCoordCount(@g)-2) END ;
+
+-- Last coord of any 2D geom to vector
+FUNCTION xyN(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, GeomCoordCount(@g)-1) END ;
+-- Last coord of any 3D geom to vector
+FUNCTION xyzN(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, GeomCoordCount(@g)-1) END ;
+
+
+-- First coord of 2D geom(1) as origin, vector to last coord of geom(2)
+FUNCTION v2fgg(@g1 GEOM, @g2 GEOM) FLOAT64X2 AS ab2(xy0(@g1), xyN(@g2)) END ;
+-- First coord of 3D geom(1) as origin, vector to last coord of geom(2)
+FUNCTION v3fgg(@g1 GEOM, @g2 GEOM) FLOAT64X3 AS ab3(xyz0(@g1), xyzN(@g2)) END ;
+
+-- First coord of 2D geom as origin, vector to last coord of geom
+FUNCTION v2fg(@g GEOM) FLOAT64X2 AS v2fgg(@g, @g) END ;
+-- First coord of 3D geom as origin, vector to last coord of geom
+FUNCTION v3fg(@g GEOM) FLOAT64X3 AS v3fgg(@g, @g) END ;
 
 
 ---- Short version for creating points
@@ -27,6 +65,7 @@ FUNCTION g3(@xyz FLOAT64X3) GEOM AS GeomMakePoint3(@xyz) END
 FUNCTION s2(@xy0 FLOAT64X2, @xy1 FLOAT64X2) GEOM AS GeomMakeSegment(@xy0, @xy1) END
 FUNCTION s3(@xyz0 FLOAT64X3, @xyz1 FLOAT64X3) GEOM AS GeomMakeSegment3(@xyz0, @xyz1) END
 
+FUNCTION s3(@xyz0 FLOAT64X3, @xyz1 FLOAT64X3) GEOM AS GeomMakeSegment3(@xyz0, @xyz1) END
 
 
 -- 
@@ -36,60 +75,97 @@ FUNCTION EndPoint2(@g GEOM) GEOM AS GeomMakePoint(GeomCoordXY(@g, GeomCoordCount
 FUNCTION StartPoint3(@g GEOM) GEOM AS GeomMakePoint3(GeomCoordXYZ(@g, 0)) END ;
 FUNCTION EndPoint3(@g GEOM) GEOM AS GeomMakePoint3(GeomCoordXYZ(@g, GeomCoordCount(@g)-1)) END ;
 
--- GEOM -> FLOAT64XN
-
--- first coord of any 2D geom to vector
-FUNCTION xy(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
-FUNCTION xy0(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
-FUNCTION StartPointXY(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
--- first coord of any 3D geom to vector
-FUNCTION xyz(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 0) END ;
-FUNCTION StartPointXYZ(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 0) END ;
--- Last coord of any 2D geom to vector
-FUNCTION EndPointXY(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, GeomCoordCount(@g)-1) END ;
--- Last coord of any 3D geom to vector
-FUNCTION EndPointXYZ(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, GeomCoordCount(@g)-1) END ;
--- center coord of any 2D geom to vector
-FUNCTION cxy(@g GEOM) FLOAT64X2 AS VectorMakeX2( VectorValue(GeomCenter(@g, 0), 0), VectorValue(GeomCenter(@g, 0), 1) ) END ;
-
--- First coord of 2D geom(1) as origin, vector to last coord of geom(2)
-FUNCTION abXY(@g1 GEOM, @g2 GEOM) FLOAT64X2 AS ab2(StartPointXY(@g1), EndPointXY(@g2)) END ;
--- First coord of 3D geom(1) as origin, vector to last coord of geom(2)
-FUNCTION abXYZ(@g1 GEOM, @g2 GEOM) FLOAT64X3 AS ab3(StartPointXYZ(@g1), EndPointXYZ(@g2)) END ;
-
--- First coord of 2D geom as origin, vector to last coord of geom
-FUNCTION GeomToXY(@g GEOM) FLOAT64X2 AS abXY(@g, @g) END ;
--- First coord of 3D geom as origin, vector to last coord of geom
-FUNCTION GeomToXYZ(@g GEOM) FLOAT64X3 AS abXYZ(@g, @g) END ;
-
-
 FUNCTION GeomIsRing(@g GEOM) BOOLEAN AS GeomCoordXY(@g,0) = GeomCoordXY(@g, GeomCoordCount(@g)-1) END ;
+
+
+-- The unitvector at the start of geom
+FUNCTION StartVec2(@geom GEOM) FLOAT64X2 AS
+	CASE
+		WHEN GeomType(@geom) = 1 THEN v2(0,0)
+		ELSE hat2(ab2(
+				GeomCoordXY(@g, 0)
+				GeomCoordXY(@g, 1)
+			))
+	END
+END
+;
+
+
+-- The unitvector at the end of geom
+FUNCTION EndVec2(@geom GEOM) FLOAT64X2 AS
+	CASE
+		WHEN GeomType(@geom) = 1 THEN v2(0,0)
+		ELSE hat2(ab2(
+				GeomCoordXY(@g, GeomCoordCount(@g)-2)
+				GeomCoordXY(@g, GeomCoordCount(@g)-1)
+			))
+	END
+END
+;
+
+-- The unitvector at the start of geom, in the direction from 0 to @dist
+FUNCTION StartVecDist2(@geom GEOM, @dist FLOAT64) FLOAT64X2 AS
+	CASE
+		WHEN GeomType(@geom) = 1 THEN v2(0,0)
+		WHEN GeomType(@geom) = 2 THEN
+			hat2(v2fg(
+				GeomPartLine(@g, 0, @dist)
+			))
+		WHEN GeomType(@geom) = 3 THEN
+			hat2(v2fg(
+				GeomPartLine(GeomConvertToLine(@g), 0, @dist)
+			))			
+		ELSE
+			v2(0,0) 
+	END
+END
+;
+
+
+-- The unitvector at the end of geom, in the direction from End-@dist to End
+FUNCTION EndVecDist2(@geom GEOM, @dist FLOAT64) FLOAT64X2 AS
+	CASE
+		WHEN GeomType(@geom) = 1 THEN v2(0,0)
+		WHEN GeomType(@geom) = 2 THEN
+			hat2(v2fg(
+				GeomPartLine(@g, GeomLength(@g, 0)-@dist, GeomLength(@g, 0))
+			))
+		WHEN GeomType(@geom) = 3 THEN
+			hat2(v2fg(
+				GeomPartLine(GeomConvertToLine(@g), GeomLength(@g, 0)-@dist, GeomLength(@g, 0))
+			))			
+		ELSE
+			v2(0,0) 
+	END
+END
+;
+
 
 
 FUNCTION CoordsInGeomsSystem(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	RotateCoordTransform2(
-		ab2(StartPointXY(@g),xy(@p)), 
-		GeomToXY(@g)
+		ab2(xy0(@g),xy(@p)), 
+		v2fg(@g)
 		)	
 )
 END
 ;
 
+-- 
 FUNCTION ProjectOntoSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
-	add2(StartPointXY(@g),
+	add2(xy0(@g),
 		scale2(
-			GeomToXY(@g),
-			Clamp(
+			hat2(v2fg(@g)),
+			clamp(
 				VectorDot(
-					hat2(GeomToXY(@g)),
-					ab2(StartPointXY(@g),xy(@p)) 
-				) / norm2(GeomToXY(@g))
+					hat2(v2fg(@g)),
+					ab2(xy0(@g),xy(@p)) 
+				)
 				,
 				v2(0,1)
 			)
-
 		)
 	)	
 )
@@ -99,15 +175,15 @@ END
 
 FUNCTION ProjectAlongSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
-	add2(StartPointXY(@g),
+	add2(xy0(@g),
 		scale2(
-			hat2(GeomToXY(@g)),
+			hat2(v2fg(@g)),
 			VectorDot(
-				hat2(GeomToXY(@g)),
-				ab2(StartPointXY(@g),xy(@p)) 
-				)
-			  )
-		)	
+				hat2(v2fg(@g)),
+				ab2(xy0(@g),xy(@p)) 
+			)
+		)
+	)	
 )
 END
 ;
@@ -121,7 +197,7 @@ FROM
 	SELECT
 		[Coord],
 		ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p) as p,
-		GeomMakeSegment(xy(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
+		GeomMakeSegment(xy0(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
 		x2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as along,
 		y2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as across,
 		norm2(ab2([XY], [XYNext])) as len
@@ -136,7 +212,7 @@ END
 
 FUNCTION ProjectionLineToSegment(@g GEOM, @p GEOM) GEOM AS
 (
-	GeomMakeSegment(xy(@p), ProjectOntoSegment(@g, @p))
+	GeomMakeSegment(xy0(@p), ProjectOntoSegment(@g, @p))
 )
 END
 ;
@@ -144,7 +220,7 @@ END
 
 FUNCTION ProjectionLineToGeom(@g GEOM, @p GEOM) GEOM AS
 (
-	GeomMakeSegment(xy(@p), ProjectOntoSegment(@g, @p))
+	GeomMakeSegment(xy0(@p), ProjectOntoSegment(@g, @p))
 )
 END
 ;
@@ -153,7 +229,7 @@ END
 
 FUNCTION GeomInterpolate(@g GEOM, @q FLOAT64) GEOM AS 
 (
-	GeomMakePoint(Interpolate2(StartPointXY(@g), EndPointXY(@g), @q))
+	GeomMakePoint(Interpolate2(xy0(@g), xyN(@g), @q))
 )
 END
 ;
