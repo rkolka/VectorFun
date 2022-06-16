@@ -60,8 +60,8 @@ FUNCTION neg4(@v FLOAT64X4) FLOAT64X4 AS v4( -x4(@v), -y4(@v), -z4(@v), -w4(@v) 
 
 FUNCTION perp2(@v FLOAT64X2) FLOAT64X2 AS v2( -y2(@v), x2(@v) ) END ;
 
-FUNCTION Atan2xCCW(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
-FUNCTION Atan2xCW(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
+FUNCTION Atan2CCW(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
+FUNCTION Atan2CW(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
 
 
 --
@@ -617,7 +617,7 @@ END
 -- clock-wise (like in geo) with offset orientation - 
 FUNCTION CWOffsetAzimuthAngle3(@v FLOAT64X3, @offset FLOAT64X2) FLOAT64 AS 
 (
-	Atan2xCW( LinearTransform2( v2f3(@v), @offset, perp2(@offset)  ) )
+	Atan2CW( LinearTransform2( v2f3(@v), @offset, perp2(@offset)  ) )
 )
 END
 ;
