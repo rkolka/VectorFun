@@ -1,5 +1,5 @@
--- $manifold$
--- $include$ [VectorFun.sql]
+﻿-- $manifold$
+-- $include$ [VectorFunBase.sql]
 
 
 -- Short accessors of individual coord values. First Coord of any geom.
@@ -19,9 +19,13 @@ FUNCTION cy(@g GEOM) FLOAT64 AS VectorValue( GeomCenter(@g, 0), 1) END ;
 FUNCTION p2(@x FLOAT64, @y FLOAT64) GEOM AS GeomMakePoint(VectorMakeX2(@x, @y)) END
 FUNCTION p3(@x FLOAT64, @y FLOAT64, @z FLOAT64) GEOM AS GeomMakePoint3(VectorMakeX3(@x, @y, @z)) END
 
--- From vector values
+-- Points from vector values
 FUNCTION g2(@xy FLOAT64X2) GEOM AS GeomMakePoint(@xy) END
 FUNCTION g3(@xyz FLOAT64X3) GEOM AS GeomMakePoint3(@xyz) END
+
+-- Segment from vector values
+FUNCTION s2(@xy0 FLOAT64X2, @xy1 FLOAT64X2) GEOM AS GeomMakeSegment(@xy0, @xy1) END
+FUNCTION s3(@xyz0 FLOAT64X3, @xyz1 FLOAT64X3) GEOM AS GeomMakeSegment3(@xyz0, @xyz1) END
 
 
 
@@ -36,6 +40,7 @@ FUNCTION EndPoint3(@g GEOM) GEOM AS GeomMakePoint3(GeomCoordXYZ(@g, GeomCoordCou
 
 -- first coord of any 2D geom to vector
 FUNCTION xy(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
+FUNCTION xy0(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
 FUNCTION StartPointXY(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
 -- first coord of any 3D geom to vector
 FUNCTION xyz(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 0) END ;
@@ -178,6 +183,14 @@ FUNCTION GeomSmoothGrid(@g GEOM, @SmoothValue FLOAT64, @GridStep FLOAT64, @Norma
 END
 ;
 
+FUNCTION GeomSmoothBuffer(@g GEOM, @BufferSize FLOAT64, @SmoothingSize FLOAT64) GEOM AS 
+(
+	GeomSmooth(GeomBuffer(GeomSmooth(@g, @SmoothingSize), @BufferSize, 0), @SmoothingSize)
+)
+END
+;
+
+  
 FUNCTION AzimuthSegment(@g GEOM) FLOAT64 AS 
 (
 	57.2958 * Atan2((VectorValue(GeomCoordXY(@g, 1),0) - VectorValue(GeomCoordXY(@g, 0),0)), (VectorValue(GeomCoordXY(@g, 1),1) - VectorValue(GeomCoordXY(@g, 0),1)))

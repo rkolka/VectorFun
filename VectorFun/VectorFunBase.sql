@@ -1,4 +1,4 @@
--- $manifold$
+﻿-- $manifold$
 
 
 -- Shorter aliases for creating Vectors 
@@ -39,6 +39,11 @@ FUNCTION setw4(@v FLOAT64X4, @w FLOAT64) FLOAT64X4 AS v4(x4(@v), y4(@v), z4(@v),
 FUNCTION v2f3(@v FLOAT64X3) FLOAT64X2 AS v2( x3(@v), y3(@v) ) END ;
 FUNCTION v2f4(@v FLOAT64X4) FLOAT64X2 AS v2( x4(@v), y4(@v) ) END ;
 FUNCTION v3f4(@v FLOAT64X4) FLOAT64X3 AS v3( x4(@v), y4(@v), z4(@v) ) END ;
+
+FUNCTION v3f2(@v FLOAT64X2) FLOAT64X3 AS v3( x2(@v), y2(@v), 0 ) END ;
+FUNCTION v4f2(@v FLOAT64X2) FLOAT64X4 AS v4( x2(@v), y2(@v), 0, 0 ) END ;
+FUNCTION v4f3(@v FLOAT64X3) FLOAT64X4 AS v4( x3(@v), y3(@v), z3(@v), 0 ) END ;
+
 
 -- regular vector to homogeneous coordinates
 FUNCTION v2thom(@v FLOAT64X2) FLOAT64X3 AS v3( x2(@v), y2(@v), 1 ) END ;

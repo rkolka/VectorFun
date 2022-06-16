@@ -1,4 +1,4 @@
--- $manifold$
+﻿-- $manifold$
 -- $include$ [VectorFunGeom.sql]
 
 
