@@ -78,25 +78,29 @@ FUNCTION EndPoint3(@g GEOM) GEOM AS GeomMakePoint3(GeomCoordXYZ(@g, GeomCoordCou
 FUNCTION GeomIsRing(@g GEOM) BOOLEAN AS GeomCoordXY(@g,0) = GeomCoordXY(@g, GeomCoordCount(@g)-1) END ;
 
 
+--VALUE @g GEOM = StringWktGeom('LINESTRING(658845 6489805, 630145 6463106, 626007 6449229, 614266 6437960)');
+
 -- The unitvector at the start of geom
-FUNCTION StartVec2(@geom GEOM) FLOAT64X2 AS
+FUNCTION StartVec2(@g GEOM) FLOAT64X2 AS
+(
 	CASE
-		WHEN GeomType(@geom) = 1 THEN v2(0,0)
+		WHEN GeomType(@g) = 1 THEN v2(0,0)
 		ELSE hat2(ab2(
-				GeomCoordXY(@g, 0)
+				GeomCoordXY(@g, 0),
 				GeomCoordXY(@g, 1)
 			))
 	END
+)
 END
 ;
 
 
 -- The unitvector at the end of geom
-FUNCTION EndVec2(@geom GEOM) FLOAT64X2 AS
+FUNCTION EndVec2(@g GEOM) FLOAT64X2 AS
 	CASE
-		WHEN GeomType(@geom) = 1 THEN v2(0,0)
+		WHEN GeomType(@g) = 1 THEN v2(0,0)
 		ELSE hat2(ab2(
-				GeomCoordXY(@g, GeomCoordCount(@g)-2)
+				GeomCoordXY(@g, GeomCoordCount(@g)-2),
 				GeomCoordXY(@g, GeomCoordCount(@g)-1)
 			))
 	END
@@ -104,14 +108,14 @@ END
 ;
 
 -- The unitvector at the start of geom, in the direction from 0 to @dist
-FUNCTION StartVecDist2(@geom GEOM, @dist FLOAT64) FLOAT64X2 AS
+FUNCTION StartVecDist2(@g GEOM, @dist FLOAT64) FLOAT64X2 AS
 	CASE
-		WHEN GeomType(@geom) = 1 THEN v2(0,0)
-		WHEN GeomType(@geom) = 2 THEN
+		WHEN GeomType(@g) = 1 THEN v2(0,0)
+		WHEN GeomType(@g) = 2 THEN
 			hat2(v2fg(
 				GeomPartLine(@g, 0, @dist)
 			))
-		WHEN GeomType(@geom) = 3 THEN
+		WHEN GeomType(@g) = 3 THEN
 			hat2(v2fg(
 				GeomPartLine(GeomConvertToLine(@g), 0, @dist)
 			))			
@@ -123,14 +127,14 @@ END
 
 
 -- The unitvector at the end of geom, in the direction from End-@dist to End
-FUNCTION EndVecDist2(@geom GEOM, @dist FLOAT64) FLOAT64X2 AS
+FUNCTION EndVecDist2(@g GEOM, @dist FLOAT64) FLOAT64X2 AS
 	CASE
-		WHEN GeomType(@geom) = 1 THEN v2(0,0)
-		WHEN GeomType(@geom) = 2 THEN
+		WHEN GeomType(@g) = 1 THEN v2(0,0)
+		WHEN GeomType(@g) = 2 THEN
 			hat2(v2fg(
 				GeomPartLine(@g, GeomLength(@g, 0)-@dist, GeomLength(@g, 0))
 			))
-		WHEN GeomType(@geom) = 3 THEN
+		WHEN GeomType(@g) = 3 THEN
 			hat2(v2fg(
 				GeomPartLine(GeomConvertToLine(@g), GeomLength(@g, 0)-@dist, GeomLength(@g, 0))
 			))			
@@ -145,7 +149,7 @@ END
 FUNCTION CoordsInGeomsSystem(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	RotateCoordTransform2(
-		ab2(xy0(@g),xy(@p)), 
+		ab2(xy0(@g),xy0(@p)), 
 		v2fg(@g)
 		)	
 )
@@ -161,7 +165,7 @@ FUNCTION ProjectOntoSegment(@g GEOM, @p GEOM) FLOAT64X2 AS
 			clamp(
 				VectorDot(
 					hat2(v2fg(@g)),
-					ab2(xy0(@g),xy(@p)) 
+					ab2(xy0(@g),xy0(@p)) 
 				)
 				,
 				v2(0,1)
@@ -180,7 +184,7 @@ FUNCTION ProjectAlongSegment(@g GEOM, @p GEOM) FLOAT64X2 AS
 			hat2(v2fg(@g)),
 			VectorDot(
 				hat2(v2fg(@g)),
-				ab2(xy0(@g),xy(@p)) 
+				ab2(xy0(@g),xy0(@p)) 
 			)
 		)
 	)	
@@ -307,7 +311,7 @@ END
 
 
 FUNCTION GeomToPixelDepth(@dims INT32X3, @origin GEOM, @geom GEOM ) GEOM AS
-	g3(SphericalToPixelDepth(@dims, SphericalCoordsCentered(xyz(@origin), xyz(@geom))))
+	g3(SphericalToPixelDepth(@dims, SphericalCoordsCentered(xyz0(@origin), xyz0(@geom))))
 END
 ;
 
