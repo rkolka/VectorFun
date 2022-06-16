@@ -60,8 +60,8 @@ FUNCTION neg4(@v FLOAT64X4) FLOAT64X4 AS v4( -x4(@v), -y4(@v), -z4(@v), -w4(@v) 
 
 FUNCTION perp2(@v FLOAT64X2) FLOAT64X2 AS v2( -y2(@v), x2(@v) ) END ;
 
-FUNCTION Atan2CCW(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
-FUNCTION Atan2CW(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
+FUNCTION AzimuthAngleCCW2(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
+FUNCTION AzimuthAngleCW2(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
 
 
 --
@@ -269,12 +269,6 @@ FUNCTION norm4(@a FLOAT64X4) FLOAT64 AS
 )
 END 
 ;
-
-
--- 2d vec as complex number
-FUNCTION ComplexFromPolar(@a FLOAT64X2) FLOAT64X2 AS v2( x2(@a)*Cos(y2(@a)), x2(@a)*Sin(y2(@a)) ) END ;
-FUNCTION ComplexToPolar(@a FLOAT64X2) FLOAT64X2 AS v2( norm2(@a), Atan2(y2(@a), x2(@a)) ) END ;
-
 
 
 -- hat(@a) is a unitvector in the same direction as @a
@@ -599,7 +593,7 @@ END
 ;
 
 -- counter clock-wise (like in math)
-FUNCTION CCWAzimuthAngle3(@v FLOAT64X3) FLOAT64 AS 
+FUNCTION AzimuthAngleCCW3(@v FLOAT64X3) FLOAT64 AS 
 (
 	Atan2( y3(@v), x3(@v) )
 )
@@ -607,7 +601,7 @@ END
 ;
 
 -- clock-wise (like in geo)
-FUNCTION CWAzimuthAngle3(@v FLOAT64X3) FLOAT64 AS 
+FUNCTION AzimuthAngleCW3(@v FLOAT64X3) FLOAT64 AS 
 (
 	Atan2( x3(@v), y3(@v) )
 )
@@ -615,9 +609,9 @@ END
 ;
 
 -- clock-wise (like in geo) with offset orientation - 
-FUNCTION CWOffsetAzimuthAngle3(@v FLOAT64X3, @offset FLOAT64X2) FLOAT64 AS 
+FUNCTION AzimuthAngleCWOffset3(@v FLOAT64X3, @offset FLOAT64X2) FLOAT64 AS 
 (
-	Atan2CW( LinearTransform2( v2f3(@v), @offset, perp2(@offset)  ) )
+	AzimuthAngleCW2( LinearTransform2( v2f3(@v), @offset, perp2(@offset)  ) )
 )
 END
 ;
@@ -632,7 +626,7 @@ END
 
 FUNCTION TriangleAspect(@a FLOAT64X3, @b FLOAT64X3, @c FLOAT64X3) FLOAT64 AS 
 (
-	CCWAzimuthAngle3( VectorCross(ab3(@a, @b), ab3(@a, @c)) )
+	AzimuthAngleCCW3( VectorCross(ab3(@a, @b), ab3(@a, @c)) )
 )
 END
 ;
@@ -640,19 +634,19 @@ END
 
 
 
-FUNCTION SphericalCoords(@v FLOAT64X3) FLOAT64x3 AS
-	v3( CWAzimuthAngle3(@v), ElevationAngle3(@v), norm3(@v) )
+FUNCTION SphericalFromCartesian(@v FLOAT64X3) FLOAT64x3 AS
+	v3( AzimuthAngleCW3(@v), ElevationAngle3(@v), norm3(@v) )
 END
 ;
 
 FUNCTION SphericalCoordsCentered(@origin FLOAT64X3, @v FLOAT64X3) FLOAT64x3 AS
-	SphericalCoords( ab3(@origin, @v) )
+	SphericalFromCartesian( ab3(@origin, @v) )
 END
 ;
 
 
 FUNCTION SphericalCoordsOriented(@orientation FLOAT64X2, @v FLOAT64X3) FLOAT64x3 AS
-	v3( CWOffsetAzimuthAngle3(@v, @orientation), ElevationAngle3(@v), norm3(@v) )
+	v3( AzimuthAngleCWOffset3(@v, @orientation), ElevationAngle3(@v), norm3(@v) )
 END
 ;
 FUNCTION SphericalCoordsCenteredOriented(@origin FLOAT64X3, @orientation FLOAT64X2, @v FLOAT64X3) FLOAT64x3 AS

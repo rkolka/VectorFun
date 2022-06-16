@@ -61,6 +61,9 @@
     <Content Include="VectorFun.readme.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="VectorFunComplex.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="VectorFunBase.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

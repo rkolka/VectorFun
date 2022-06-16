@@ -22,6 +22,7 @@ copy VectorFun.uninstall.bat "%M9%\VectorFun\"
 copy VectorFun.readme.txt    "%M9%\VectorFun\"
 copy VectorFunTest.sql       "%M9%\VectorFun\"
 copy VectorFunBase.sql       "%M9%\VectorFun\"
+copy VectorFunComplex.sql    "%M9%\VectorFun\"
 copy VectorFunConstants.sql  "%M9%\VectorFun\"
 copy VectorFunGeom.sql       "%M9%\VectorFun\"
 

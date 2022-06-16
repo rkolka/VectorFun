@@ -9,7 +9,7 @@ public class Script
     private static readonly string AddinName = "VectorFun";
     private static readonly string AddinCodeFolder = "Code\\VectorFun";
 
-    private static readonly string[] CodeFiles = { "VectorFunBase.sql", "VectorFunGeom.sql", "VectorFunConstants.sql", "VectorFunTest.sql" };
+    private static readonly string[] CodeFiles = { "VectorFunBase.sql", "VectorFunGeom.sql", "VectorFunComplex.sql", "VectorFunConstants.sql", "VectorFunTest.sql" };
 
     private static Context Manifold;
 
