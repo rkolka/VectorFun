@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set M9=C:\Program Files\Manifold\v9.0\shared
+set M9=C:\Program Files\Manifold\v9.0\shared\Addins
 
 if exist "%M9%\VectorFun\" GOTO ALREADYINSTALLED
 GOTO DOINST
@@ -16,10 +16,15 @@ GOTO CANNOTCREATEDIR
 
 :COPYFILES
 echo ------- Copying add-in files
-copy VectorFun.dll "%M9%\VectorFun\"
-copy VectorFun.dll.addin "%M9%\VectorFun\"
+copy VectorFun.dll           "%M9%\VectorFun\"
+copy VectorFun.dll.addin     "%M9%\VectorFun\"
 copy VectorFun.uninstall.bat "%M9%\VectorFun\"
-copy VectorFun.readme.txt "%M9%\VectorFun\"
+copy VectorFun.readme.txt    "%M9%\VectorFun\"
+copy VectorFunTest.sql       "%M9%\VectorFun\"
+copy VectorFunBase.sql       "%M9%\VectorFun\"
+copy VectorFunConstants.sql  "%M9%\VectorFun\"
+copy VectorFunGeom.sql       "%M9%\VectorFun\"
+
 goto END
 
 :CANNOTCREATEDIR
@@ -36,3 +41,5 @@ GOTO END
 :END
 endlocal
 pause
+
+

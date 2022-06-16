@@ -2,7 +2,7 @@
 setlocal
 
 
-set M9=C:\Program Files\Manifold\v9.0\shared
+set M9=C:\Program Files\Manifold\v9.0\shared\Addins
 
 
 if exist "%M9%\VectorFun\" GOTO PROMPT
