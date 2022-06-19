@@ -33,9 +33,14 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
 
       - uses: MinoruSekine/setup-scoop@v1
-
+        with:
+          add_extras_bucket: 'true'
+          scoop_checkup: 'true'
+        
+        
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
           msbuild.exe VectorFun.sln
           echo VectorFun Built.
+        
