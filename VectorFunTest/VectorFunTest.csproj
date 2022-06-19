@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="extnet">
-      <HintPath>C:\Program Files\Manifold\v9.0\bin64\extnet.dll</HintPath>
+      <HintPath>dep\extnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

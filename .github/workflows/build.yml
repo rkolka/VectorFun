@@ -24,10 +24,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - uses: MinoruSekine/setup-scoop@v1
-        with:
-          add_extras_bucket: 'true'
-          scoop_checkup: 'true'      
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -41,6 +37,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          msbuild.exe VectorFun.sln
+          msbuild.exe VectorFun.sln /p:platform=x64 /p:configuration=Release /t:Rebuild
           echo VectorFun Built.
         
