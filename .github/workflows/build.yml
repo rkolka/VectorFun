@@ -39,4 +39,45 @@ jobs:
         run: |
           msbuild.exe VectorFun.sln /p:platform=x64 /p:configuration=Release /t:Rebuild
           echo VectorFun Built.
-        
+
+
+      - name: Prepare release
+        id: prepare_release
+        run: |
+          $ver = $Env:GITHUB_REF -replace 'refs/tags/v', ''
+          echo "Release version: $ver"
+          Write-Host "::set-output name=version::$ver"
+          if ((Get-Content -Raw CHANGELOG.md) -match '(?m)^## \['+$ver+'\].*?(\r?\n.*?)+(?=^## \[)'){
+            $changelog_txt = $Matches[0]
+          }else{
+            $changelog_txt = '['+$ver+']'
+          }
+          echo "Got changelog:" + $changelog_txt
+          $changelog_txt = $changelog_txt.Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A')
+          Write-Host "::set-output name=changelog::$changelog_txt"
+        shell: pwsh
+
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.prepare_release.outputs.changelog }}
+          draft: false
+          prerelease: false
+      - name: VectorFun Zip 
+        run: 7z a -tzip ./VectorFun.zip ./VectorFun/bin/Release/*
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./VectorFun.zip
+          asset_name: VectorFun.zip
+          asset_content_type: application/zip
