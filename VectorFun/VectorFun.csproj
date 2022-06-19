@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="extnet">
-      <HintPath>dep\extnet.dll</HintPath>
+      <HintPath>..\dep\extnet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
