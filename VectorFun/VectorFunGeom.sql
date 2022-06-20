@@ -145,7 +145,9 @@ END
 ;
 
 
-
+-- given geom @g, make vector from first to last coord,
+-- Return coords of P Along and Across of G
+-- Can call FUNCTION PAlongAcrossG(@g GEOM, @p GEOM) FLOAT64X2 AS 
 FUNCTION CoordsInGeomsSystem(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	RotateCoordTransform2(
@@ -156,7 +158,7 @@ FUNCTION CoordsInGeomsSystem(@g GEOM, @p GEOM) FLOAT64X2 AS
 END
 ;
 
--- 
+-- "Project" P on G (segment from 1st to last coord), snap to endpoints of G if P is farther
 FUNCTION ProjectOntoSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	add2(xy0(@g),
@@ -177,6 +179,7 @@ END
 ;
 
 
+-- Project P along G (segment from 1st to last coord), 
 FUNCTION ProjectAlongSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	add2(xy0(@g),
@@ -192,6 +195,14 @@ FUNCTION ProjectAlongSegment(@g GEOM, @p GEOM) FLOAT64X2 AS
 END
 ;
 
+
+-- Take line or area geometry @g and point @p (first point if area, line or multipoint).
+-- Project to nearest segment of @g. 
+-- Return, 
+-- I does not return overall lin-ref measure.
+-- but it does return the coord/segment number and distance along the segment
+-- and also distance from ([across])
+-- 
 FUNCTION ProjectOntoGeom(@g GEOM, @p GEOM) TABLE AS 
 (
 SELECT 
@@ -230,7 +241,7 @@ END
 ;
 
 
-
+-- Point at 
 FUNCTION GeomInterpolate(@g GEOM, @q FLOAT64) GEOM AS 
 (
 	GeomMakePoint(Interpolate2(xy0(@g), xyN(@g), @q))

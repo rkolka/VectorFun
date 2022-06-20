@@ -24,3 +24,5 @@ FUNCTION ComplexYofP(@a FLOAT64X2) FLOAT64 AS x2(@a)*Sin(y2(@a)) END ;
 FUNCTION ComplexRofC(@a FLOAT64X2) FLOAT64 AS norm2(@a) END ;
 FUNCTION ComplexφofC(@a FLOAT64X2) FLOAT64 AS Atan2(y2(@a), x2(@a)) END ;
 
+FUNCTION ComplexHatofC(@a FLOAT64X2) FLOAT64 AS v2( x2(@a)/norm2(@a), y2(@a)/norm2(@a) ) END ;
+FUNCTION ComplexHatofP(@a FLOAT64X2) FLOAT64 AS v2( 1, y2(@a) ) END ;
