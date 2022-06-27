@@ -665,3 +665,18 @@ FUNCTION SphericalToPixelDepth(@dims INT32X3, @v FLOAT64X3) INT32X3 AS
 	    )
 END
 ;
+
+
+
+-- given two points with (unit)vectors, return the coefficents where those vectors will meet.
+-- first component < -1  -->  
+FUNCTION αβOfIntersection(@point1 FLOAT64X2, @vec1 FLOAT64X2, @point2 FLOAT64X2, @vec2 FLOAT64X2) FLOAT64X2 AS 
+(
+	v2(
+		VectorDot( neg2(perp2(@vec2)), ab2(@point2, @point1) ) / VectorDot( @vec1, perp2(@vec2) )
+		,
+		VectorDot( neg2(perp2(@vec1)), ab2(@point2, @point1) ) / VectorDot( @vec1, perp2(@vec2) )
+	)
+)
+END
+;
