@@ -673,10 +673,15 @@ END
 FUNCTION αβOfIntersection(@point1 FLOAT64X2, @vec1 FLOAT64X2, @point2 FLOAT64X2, @vec2 FLOAT64X2) FLOAT64X2 AS 
 (
 	v2(
-		VectorDot( neg2(perp2(@vec2)), ab2(@point2, @point1) ) / VectorDot( @vec1, perp2(@vec2) )
+	--	VectorDot( hat2(perp2(@vec2)),  ab2(@point1, @point2) ) / VectorDot( @vec1, hat2(perp2(@vec2)) ) -- no need for expensive hat2
+	--  hat2 of perp'd vec is both in numerator and in denominator and therefore cancels out :)	
+		VectorDot( perp2(@vec2), ab2(@point1, @point2) ) / VectorDot( @vec1, perp2(@vec2) )
 		,
-		VectorDot( neg2(perp2(@vec1)), ab2(@point2, @point1) ) / VectorDot( @vec1, perp2(@vec2) )
+	--  VectorDot( perp2(@vec1), ab2(@point2, @point1) ) / VectorDot( @vec2, perp2(@vec1) )  -- symmetric, but can be rewritten
+	--  To have more common subexpressions but lose symmetry, switch baseline direction and swich perp in the denominator, both change the sign of VectorDot
+		VectorDot( perp2(@vec1), ab2(@point1, @point2) ) / VectorDot( @vec1, perp2(@vec2) )
 	)
 )
 END
 ;
+
