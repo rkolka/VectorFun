@@ -4,20 +4,13 @@ name: VectorFun Release
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "release"
+  release:
     # The type of runner that the job will run on
     runs-on: windows-latest
 
@@ -42,24 +35,6 @@ jobs:
           msbuild.exe VectorFun.sln /p:platform=x64 /p:configuration=Release /t:Rebuild
           echo VectorFun Built.
 
-
-      - name: Prepare release
-        id: prepare_release
-        run: |
-          $ver = $Env:GITHUB_REF -replace 'refs/tags/v', ''
-          echo "Release version: $ver"
-          Write-Host "::set-output name=version::$ver"
-          if ((Get-Content -Raw CHANGELOG.md) -match '(?m)^## \['+$ver+'\].*?(\r?\n.*?)+(?=^## \[)'){
-            $changelog_txt = $Matches[0]
-          }else{
-            $changelog_txt = '['+$ver+']'
-          }
-          echo "Got changelog:" + $changelog_txt
-          $changelog_txt = $changelog_txt.Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A')
-          Write-Host "::set-output name=changelog::$changelog_txt"
-        shell: pwsh
-
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
@@ -68,7 +43,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: ${{ steps.prepare_release.outputs.changelog }}
           draft: false
           prerelease: false
       - name: VectorFun Zip 
