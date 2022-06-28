@@ -345,36 +345,39 @@ END
 
 
 
-FUNCTION SmallestMisShoot(@endpoint FLOAT64X2, @endvec FLOAT64X2, @misShootBounds FLOAT64X2,  @geom GEOM ) TABLE AS 
+FUNCTION SmallestMisShoots(@endpoint FLOAT64X2, @endvec FLOAT64X2, @misShootBounds FLOAT64X2, @geom GEOM, @numres INT64) TABLE AS 
 (
 	SELECT 
 		@endpoint as [EndPoint], @endvec as [EndVec], [Branch], [Coord], [CoordInBranch], [XY], [XYNext], [len], [vec], [vec_hat], [αβ] 
 	FROM
-	(
-	SELECT
-		[s1].*
-		,
-		αβOfIntersection(@endpoint, @endvec, [XY], [vec_hat]) as [αβ]
-	FROM	
-	(
-	SELECT 	
-		[Branch],
-		[Coord],
-		[CoordInBranch],
-		[XY],
-		[XYNext],
-		norm2(ab2([XY], [XYNext])) as [len],
-		ab2([XY], [XYNext]) as [vec],
-		hat2(ab2([XY], [XYNext])) as [vec_hat]
-	FROM
-		CALL GeomToSegments(@geom)
-	) as [s1]
-
-	) as [s2]
+		(
+		SELECT
+			[s1].*
+			,
+			αβOfIntersection(@endpoint, @endvec, [XY], [vec_hat]) as [αβ]
+		FROM	
+			(
+			SELECT 	
+				[Branch],
+				[Coord],
+				[CoordInBranch],
+				[XY],
+				[XYNext],
+				norm2(ab2([XY], [XYNext])) as [len],
+				ab2([XY], [XYNext]) as [vec],
+				hat2(ab2([XY], [XYNext])) as [vec_hat]
+			FROM
+				CALL GeomToSegments(@geom)
+			) as [s1]
+		) as [s2]
 	WHERE
 		y2([αβ]) BETWEEN 0 AND [len]
 		AND
 		x2([αβ]) BETWEEN x2(@misShootBounds) AND y2(@misShootBounds)
+	ORDER BY 
+		Abs(x2([αβ]))
+	FETCH 
+		@numres
 )
 END
 ;
