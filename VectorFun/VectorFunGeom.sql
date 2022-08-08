@@ -200,8 +200,8 @@ END
 -- Project to nearest segment of @g. 
 -- Return, 
 -- I does not return overall lin-ref measure.
--- but it does return the coord/segment number and distance along the segment
--- and also distance from ([across])
+-- but it does return the coord/segment number and distance along the segment ([along])
+-- and also distance from the segment (or line if [along] ) ([across]) 
 -- 
 FUNCTION ProjectOntoGeom(@g GEOM, @p GEOM) TABLE AS 
 (
