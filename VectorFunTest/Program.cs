@@ -14,7 +14,7 @@ namespace VectorFunTest
         static void Main(string[] args)
         {
 
-            String extdll = @"C:\Program Files\Manifold\v9.0\bin64\ext.dll";
+            String extdll = @"C:\Program Files\Manifold\v9.0\ext.dll";
             using (Manifold.Root root = new Manifold.Root(extdll))
             {
                 Manifold.Application app = root.Application;

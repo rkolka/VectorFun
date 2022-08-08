@@ -19,12 +19,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files\Manifold\v9.0\shared\Debug\VectorFun\</OutputPath>
+    <OutputPath>C:\Program Files\Manifold\v9.0\extras\Debug\VectorFun\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files\Manifold\v9.0\bin64\manifold.exe</StartProgram>
+    <StartProgram>C:\Program Files\Manifold\v9.0\manifold.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <PlatformTarget>x64</PlatformTarget>
