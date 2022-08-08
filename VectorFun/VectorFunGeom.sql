@@ -381,3 +381,62 @@ FUNCTION SmallestMisShoots(@endpoint FLOAT64X2, @endvec FLOAT64X2, @misShootBoun
 )
 END
 ;
+
+
+
+FUNCTION GeomCrossSections(@geom GEOM, @SectionStep FLOAT64, @SectionWidth FLOAT64, @SectionDepth FLOAT64) TABLE AS
+(
+
+	SELECT
+		[FromM], [ToM], [GeomAlong]
+		,
+		[vec], [xy0], [xyz0], [vec_hat], [perp_hat], [GeomAcross]
+		,	
+    	GeomSmooth(GeomBuffer([GeomAcross], @SectionDepth/2, 0), @SectionDepth/5) as  [GeomBuf]
+	FROM 
+	(
+	SELECT
+		[FromM], [ToM], [GeomAlong]
+		,
+		[vec], [xy0], [xyz0]
+		,
+		[vec_hat], [perp_hat]
+		,
+		s2(	add2([xy0], scale2(neg2([perp_hat]), @SectionWidth/2)),
+			add2([xy0], scale2([perp_hat], @SectionWidth/2))
+		) as [geomAcross]
+	FROM
+		(
+		SELECT
+			[FromM], [ToM], [GeomAlong]
+			,
+			[vec], [xy0], [xyz0]
+			,
+			hat2([vec]) as [vec_hat]          -- unitvector along geom
+			,
+			perp2(hat2([vec])) as [perp_hat]  -- unitvector perpendicular to geom
+		FROM	
+			(
+			SELECT
+				[FromM], [ToM], [GeomAlong]
+				,
+				v2fg([geomAlong]) as [vec]   -- v2fg: 2d vector from geom, from first to last point
+				,
+				xy0([geomAlong]) as [xy0]    -- v2fg: 2d vector of first point
+				,
+				v3f2(xy0([geomAlong])) as [xyz0]	-- v3f2: 3d vector of 2d vector, with z=0
+			FROM 
+				(
+				SELECT
+					[ValueMin] as [FromM], 
+					[ValueMax] as [ToM], 
+					[Geom] as [GeomAlong]
+				FROM
+					CALL GeomToPartsLineSequence(@geom, 0, GeomLength(@geom, 0), @SectionStep)
+				)
+			)
+		)
+	)
+)
+END
+;
