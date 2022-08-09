@@ -383,6 +383,13 @@ END
 ;
 
 
+--- VARIABLES FOR DEBUGGING --- 
+--VALUE @geom GEOM = StringWktGeom('LINESTRING(0 0, 23 54, 65 88)');
+--VALUE @tab TABLE = [Roads];
+--VALUE @SectionWidth FLOAT64 = 4;
+--VALUE @SectionDepth FLOAT64 = 0.5;
+--VALUE @SectionStep FLOAT64 = 0.5;
+--- VARIABLES FOR DEBUGGING --- 
 
 FUNCTION GeomCrossSections(@geom GEOM, @SectionStep FLOAT64, @SectionWidth FLOAT64, @SectionDepth FLOAT64) TABLE AS
 (
