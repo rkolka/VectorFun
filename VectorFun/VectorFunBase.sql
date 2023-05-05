@@ -1,5 +1,10 @@
 ﻿-- $manifold$
 
+-- define τ and π
+-- PI is built into Manifold 9
+VALUE @τ FLOAT64 = PI*2;
+VALUE @π FLOAT64 = PI;
+VALUE @tau FLOAT64 = PI*2;
 
 -- Shorter aliases for creating Vectors 
 FUNCTION v2(@x FLOAT64, @y FLOAT64) FLOAT64X2 AS VectorMakeX2(@x, @y) END ;
@@ -40,10 +45,10 @@ FUNCTION v2f3(@v FLOAT64X3) FLOAT64X2 AS v2( x3(@v), y3(@v) ) END ;
 FUNCTION v2f4(@v FLOAT64X4) FLOAT64X2 AS v2( x4(@v), y4(@v) ) END ;
 FUNCTION v3f4(@v FLOAT64X4) FLOAT64X3 AS v3( x4(@v), y4(@v), z4(@v) ) END ;
 
+-- add 3rd and/or 4th dimension
 FUNCTION v3f2(@v FLOAT64X2) FLOAT64X3 AS v3( x2(@v), y2(@v), 0 ) END ;
 FUNCTION v4f2(@v FLOAT64X2) FLOAT64X4 AS v4( x2(@v), y2(@v), 0, 0 ) END ;
 FUNCTION v4f3(@v FLOAT64X3) FLOAT64X4 AS v4( x3(@v), y3(@v), z3(@v), 0 ) END ;
-
 
 -- regular vector to homogeneous coordinates
 FUNCTION v2thom(@v FLOAT64X2) FLOAT64X3 AS v3( x2(@v), y2(@v), 1 ) END ;
@@ -53,24 +58,21 @@ FUNCTION v3thom(@v FLOAT64X3) FLOAT64X4 AS v4( x3(@v), y3(@v), z3(@v), 1) END ;
 FUNCTION v2fhom(@v FLOAT64X3) FLOAT64X2 AS v2( x3(@v)/z3(@v), y3(@v)/z3(@v) ) END ;
 FUNCTION v3fhom(@v FLOAT64X4) FLOAT64X3 AS v3( x4(@v)/w4(@v), y4(@v)/w4(@v), z4(@v)/w4(@v) ) END ;
 
-
+-- flip (negate) vectors
 FUNCTION neg2(@v FLOAT64X2) FLOAT64X2 AS v2( -x2(@v), -y2(@v) ) END ;
 FUNCTION neg3(@v FLOAT64X3) FLOAT64X3 AS v3( -x3(@v), -y3(@v), -z3(@v) ) END ;
 FUNCTION neg4(@v FLOAT64X4) FLOAT64X4 AS v4( -x4(@v), -y4(@v), -z4(@v), -w4(@v) ) END ;
 
+-- Perpendicular in 2D (rotate τ/4)
 FUNCTION perp2(@v FLOAT64X2) FLOAT64X2 AS v2( -y2(@v), x2(@v) ) END ;
 
 FUNCTION AzimuthAngleCCW2(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
 FUNCTION AzimuthAngleCW2(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
 
 
---
+-- 
 FUNCTION clamp(@x FLOAT64, @v FLOAT64X2) FLOAT64 AS 
-	CASE
-		WHEN @x < x2(@v) THEN x2(@v)
-		WHEN @x > y2(@v) THEN y2(@v)
-		ELSE @x 
-	END
+	Bound(@x, x2(@v), y2(@v), FALSE)
 END ;
 
 -- 
