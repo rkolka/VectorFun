@@ -66,9 +66,11 @@ FUNCTION neg4(@v FLOAT64X4) FLOAT64X4 AS v4( -x4(@v), -y4(@v), -z4(@v), -w4(@v) 
 -- Perpendicular in 2D (rotate τ/4)
 FUNCTION perp2(@v FLOAT64X2) FLOAT64X2 AS v2( -y2(@v), x2(@v) ) END ;
 
--- Angle from "north"?
-FUNCTION AzimuthAngleCCW2(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
+-- 2D vector angle from "north" clockwise
 FUNCTION AzimuthAngleCW2(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
+
+-- 2D vector angle from "east" counter-clockwise
+FUNCTION AzimuthAngleCCW2(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
 
 
 -- Clamp a number by boundsX2
