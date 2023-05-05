@@ -66,22 +66,22 @@ FUNCTION neg4(@v FLOAT64X4) FLOAT64X4 AS v4( -x4(@v), -y4(@v), -z4(@v), -w4(@v) 
 -- Perpendicular in 2D (rotate τ/4)
 FUNCTION perp2(@v FLOAT64X2) FLOAT64X2 AS v2( -y2(@v), x2(@v) ) END ;
 
+-- Angle from "north"?
 FUNCTION AzimuthAngleCCW2(@v FLOAT64X2) FLOAT64 AS Atan2( y2(@v), x2(@v) ) END ;
 FUNCTION AzimuthAngleCW2(@v FLOAT64X2) FLOAT64 AS Atan2( x2(@v), y2(@v) ) END ;
 
 
--- 
+-- Clamp a number by boundsX2
 FUNCTION clamp(@x FLOAT64, @v FLOAT64X2) FLOAT64 AS 
 	Bound(@x, x2(@v), y2(@v), FALSE)
 END ;
 
--- 
+-- Epsilon equality
 FUNCTION EqualsEpsilon1(@v FLOAT64, @u FLOAT64, @epsilon FLOAT64) BOOLEAN AS 
 (
 	    Abs( @v - @u ) <= @epsilon
 )
 END ;
-
 
 FUNCTION EqualsEpsilon2(@v FLOAT64X2, @u FLOAT64X2, @epsilon FLOAT64) BOOLEAN AS 
 (
@@ -97,7 +97,6 @@ FUNCTION EqualsEpsilon3(@v FLOAT64X3, @u FLOAT64X3, @epsilon FLOAT64) BOOLEAN AS
 	AND	Abs( z3(@v) - z3(@u) ) <= @epsilon
 )
 END ;
-
 
 FUNCTION EqualsEpsilon4(@v FLOAT64X4, @u FLOAT64X4, @epsilon FLOAT64) BOOLEAN AS 
 (
@@ -119,7 +118,6 @@ FUNCTION ab2(@a FLOAT64X2, @b FLOAT64X2) FLOAT64X2 AS v2(x2(@b) - x2(@a), y2(@b)
 FUNCTION ab3(@a FLOAT64X3, @b FLOAT64X3) FLOAT64X3 AS v3(x3(@b) - x3(@a), y3(@b) - y3(@a), z3(@b) - z3(@a) ) END ;
 FUNCTION ab4(@a FLOAT64X4, @b FLOAT64X4) FLOAT64X4 AS v4(x4(@b) - x4(@a), y4(@b) - y4(@a), z4(@b) - z4(@a), w4(@b) - w4(@a) ) END ;
 
-
 -- Scale vectors
 FUNCTION scale2(@a FLOAT64X2, @b FLOAT64) FLOAT64X2 AS v2(@b*x2(@a), @b*y2(@a)) END ;
 FUNCTION scale3(@a FLOAT64X3, @b FLOAT64) FLOAT64X3 AS v3(@b*x3(@a), @b*y3(@a), @b*z3(@a)) END ;
@@ -131,7 +129,6 @@ FUNCTION scaleComponents3(@a FLOAT64X3, @b FLOAT64X3) FLOAT64X3 AS v3( x3(@a) * 
 FUNCTION scaleComponents4(@a FLOAT64X4, @b FLOAT64X4) FLOAT64X4 AS v4( x4(@a) * x4(@b), y4(@a) * y4(@b), z4(@a) * z4(@b), w4(@a) * w4(@b) ) END ;
 
 -- MostOrthogonalAxis
-
 FUNCTION MostOrthogonalAxis2(@v FLOAT64X2) FLOAT64X2 AS 
 (
 	CASE
@@ -140,8 +137,6 @@ FUNCTION MostOrthogonalAxis2(@v FLOAT64X2) FLOAT64X2 AS
 	END 
 )
 END ;
-
-
 
 FUNCTION MostOrthogonalAxis3(@v FLOAT64X3) FLOAT64X3 AS 
 (
@@ -152,8 +147,6 @@ FUNCTION MostOrthogonalAxis3(@v FLOAT64X3) FLOAT64X3 AS
 	END 
 )
 END ;
-
-
 
 FUNCTION MostOrthogonalAxis4(@v FLOAT64X4) FLOAT64X4 AS 
 (
@@ -166,11 +159,8 @@ FUNCTION MostOrthogonalAxis4(@v FLOAT64X4) FLOAT64X4 AS
 )
 END ;
 
-
 --- 
---MaximumComponent
 --MinimumComponent
-
 FUNCTION MinimumComponent2(@v FLOAT64X4) FLOAT64 AS 
 (
 	CASE
@@ -180,6 +170,7 @@ FUNCTION MinimumComponent2(@v FLOAT64X4) FLOAT64 AS
 )
 END
 ; 
+
 FUNCTION MinimumComponent3(@v FLOAT64X4) FLOAT64 AS 
 (
 	CASE
@@ -190,7 +181,6 @@ FUNCTION MinimumComponent3(@v FLOAT64X4) FLOAT64 AS
 )
 END
 ;
-
 
 FUNCTION MinimumComponent4(@v FLOAT64X4) FLOAT64 AS 
 (
@@ -204,10 +194,7 @@ FUNCTION MinimumComponent4(@v FLOAT64X4) FLOAT64 AS
 END
 ;
 
-
-
-
-
+--MaximumComponent
 FUNCTION MaximumComponent2(@v FLOAT64X4) FLOAT64 AS 
 (
 	CASE
@@ -217,6 +204,7 @@ FUNCTION MaximumComponent2(@v FLOAT64X4) FLOAT64 AS
 )
 END
 ; 
+
 FUNCTION MaximumComponent3(@v FLOAT64X4) FLOAT64 AS 
 (
 	CASE
@@ -227,7 +215,6 @@ FUNCTION MaximumComponent3(@v FLOAT64X4) FLOAT64 AS
 )
 END
 ;
-
 
 FUNCTION MaximumComponent4(@v FLOAT64X4) FLOAT64 AS 
 (
@@ -241,16 +228,13 @@ FUNCTION MaximumComponent4(@v FLOAT64X4) FLOAT64 AS
 END
 ;
 
-
 -- dot products VectorDot(<valuexN>, <valuexN>)
 -- VectorDot(<valuexN>, <valuexN>)
-
 
 -- Cross product in 3D. Returns vector perpendicular to both @a and @b. 
 -- VectorCross(<valuex3>, <valuex3>)
 
-
--- norm is the length of vector
+-- The length of vector, norm
 FUNCTION norm2(@a FLOAT64X2) FLOAT64 AS
 (
 	Hypot( x2(@a), y2(@a) )
@@ -272,8 +256,7 @@ FUNCTION norm4(@a FLOAT64X4) FLOAT64 AS
 END 
 ;
 
-
--- hat(@a) is a unitvector in the same direction as @a
+-- Unitvector in the same direction as @a - "hat" operator
 FUNCTION hat2(@a FLOAT64X2) FLOAT64X2 AS
 (
 	v2( 
@@ -295,8 +278,6 @@ FUNCTION hat3(@a FLOAT64X3) FLOAT64X3 AS
 END 
 ;
 
-
-
 FUNCTION hat4(@a FLOAT64X3) FLOAT64X3 AS
 (
 	v4( 
@@ -310,15 +291,13 @@ END
 ;
 
 
--- Interpolate or mix a and b 
-
+-- Interpolate or mix vectors @a and @b by @q 
 FUNCTION interpolate1(@a FLOAT64, @b FLOAT64, @q FLOAT64) FLOAT64X2 AS 
 (
 	@a * (1 - @q) + @b * @q 
 )
 END
 ;
-
 
 FUNCTION interpolate2(@a FLOAT64X2, @b FLOAT64X2, @q FLOAT64) FLOAT64X2 AS 
 (
@@ -330,7 +309,6 @@ FUNCTION interpolate2(@a FLOAT64X2, @b FLOAT64X2, @q FLOAT64) FLOAT64X2 AS
 END
 ;
 
-
 FUNCTION interpolate3(@a FLOAT64X3, @b FLOAT64X3, @q FLOAT64) FLOAT64X3 AS 
 (
 	v3(
@@ -341,7 +319,6 @@ FUNCTION interpolate3(@a FLOAT64X3, @b FLOAT64X3, @q FLOAT64) FLOAT64X3 AS
 )
 END
 ;
-
 
 FUNCTION interpolate4(@a FLOAT64X4, @b FLOAT64X4, @q FLOAT64) FLOAT64X4 AS 
 (
