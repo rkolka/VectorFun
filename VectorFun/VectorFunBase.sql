@@ -11,15 +11,14 @@ FUNCTION v2(@x FLOAT64, @y FLOAT64) FLOAT64X2 AS VectorMakeX2(@x, @y) END ;
 FUNCTION v3(@x FLOAT64, @y FLOAT64, @z FLOAT64) FLOAT64X3 AS VectorMakeX3(@x, @y, @z) END ;
 FUNCTION v4(@x FLOAT64, @y FLOAT64, @z FLOAT64, @w FLOAT64) FLOAT64X4 AS VectorMakeX4(@x, @y, @z, @w) END ;
 
+
 -- Short accessors of vector components
 FUNCTION x2(@v FLOAT64X2) FLOAT64 AS VectorValue(@v, 0) END ;
 FUNCTION y2(@v FLOAT64X2) FLOAT64 AS VectorValue(@v, 1) END ;
-	
 
 FUNCTION x3(@v FLOAT64X3) FLOAT64 AS VectorValue(@v, 0) END ;
 FUNCTION y3(@v FLOAT64X3) FLOAT64 AS VectorValue(@v, 1) END ;
 FUNCTION z3(@v FLOAT64X3) FLOAT64 AS VectorValue(@v, 2) END ;
-
 
 FUNCTION x4(@v FLOAT64X4) FLOAT64 AS VectorValue(@v, 0) END ;
 FUNCTION y4(@v FLOAT64X4) FLOAT64 AS VectorValue(@v, 1) END ;
@@ -39,6 +38,7 @@ FUNCTION setx4(@v FLOAT64X4, @x FLOAT64) FLOAT64X4 AS v4(@x, y4(@v), z4(@v), w4(
 FUNCTION sety4(@v FLOAT64X4, @y FLOAT64) FLOAT64X4 AS v4(x4(@v), @y, z4(@v), w4(@v) ) END ;
 FUNCTION setz4(@v FLOAT64X4, @z FLOAT64) FLOAT64X4 AS v4(x4(@v), y4(@v), @z, w4(@v) ) END ;
 FUNCTION setw4(@v FLOAT64X4, @w FLOAT64) FLOAT64X4 AS v4(x4(@v), y4(@v), z4(@v), @w ) END ;
+
 
 -- drop 3rd and/or 4th dimension
 FUNCTION v2f3(@v FLOAT64X3) FLOAT64X2 AS v2( x3(@v), y3(@v) ) END ;
@@ -79,7 +79,7 @@ END ;
 -- Epsilon equality
 FUNCTION EqualsEpsilon1(@v FLOAT64, @u FLOAT64, @epsilon FLOAT64) BOOLEAN AS 
 (
-	    Abs( @v - @u ) <= @epsilon
+	Abs( @v - @u ) <= @epsilon
 )
 END ;
 
