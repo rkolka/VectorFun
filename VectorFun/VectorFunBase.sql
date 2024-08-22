@@ -253,7 +253,7 @@ END
 
 FUNCTION norm4(@a FLOAT64X4) FLOAT64 AS
 (
-	sqrt( pow(x3(@a), 2) + pow(y3(@a), 2) + pow(z3(@a), 2) + pow(z3(@a), 2) )
+	sqrt( pow(x4(@a), 2) + pow(y4(@a), 2) + pow(z4(@a), 2) + pow(w4(@a), 2) )
 )
 END 
 ;
@@ -280,7 +280,7 @@ FUNCTION hat3(@a FLOAT64X3) FLOAT64X3 AS
 END 
 ;
 
-FUNCTION hat4(@a FLOAT64X3) FLOAT64X3 AS
+FUNCTION hat4(@a FLOAT64X4) FLOAT64X4 AS
 (
 	v4( 
 		x4(@a) / norm4(@a),
