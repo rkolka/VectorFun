@@ -399,7 +399,16 @@ FUNCTION GeomCrossSections(@geom GEOM, @SectionStep FLOAT64, @SectionWidth FLOAT
 		,
 		[vec], [xy0], [xyz0], [vec_hat], [perp_hat], [GeomAcross]
 		,	
-    	GeomSmooth(GeomBuffer([GeomAcross], @SectionDepth/2, 0), @SectionDepth/5) as  [GeomBuf]
+		GeomBoundsRectRotated(INLINE GeomMergePoints(
+			g2(add2(add2([xy0], scale2(neg2([perp_hat]), @SectionWidth/2)), scale2(neg2([vec_hat]), @SectionDepth/2)))
+			,
+			g2(add2(add2([xy0], scale2(neg2([perp_hat]), @SectionWidth/2)), scale2(     [vec_hat] , @SectionDepth/2)))
+			,
+			g2(add2(add2([xy0], scale2(     [perp_hat] , @SectionWidth/2)), scale2(     [vec_hat] , @SectionDepth/2)))
+			,
+			g2(add2(add2([xy0], scale2(     [perp_hat] , @SectionWidth/2)), scale2(neg2([vec_hat]), @SectionDepth/2)))
+
+		), 0) as [section_rect]
 	FROM 
 	(
 	SELECT
