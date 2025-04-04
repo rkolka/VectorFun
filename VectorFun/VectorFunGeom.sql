@@ -24,9 +24,9 @@ FUNCTION xy0(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 0) END ;
 FUNCTION xyz0(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 0) END ;
 
 -- 2nd coord of any 2D geom to vector
-FUNCTION xy2(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 1) END ;
+FUNCTION xy1(@g GEOM) FLOAT64X2 AS GeomCoordXY(@g, 1) END ;
 -- 2nd coord of any 3D geom to vector
-FUNCTION xyz2(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 1) END ;
+FUNCTION xyz1(@g GEOM) FLOAT64X3 AS GeomCoordXYZ(@g, 1) END ;
 
 
 -- 2nd to last coord of any 2D geom to vector
