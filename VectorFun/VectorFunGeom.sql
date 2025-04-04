@@ -427,9 +427,9 @@ FUNCTION GeomCrossSections(@geom GEOM, @SectionStep FLOAT64, @SectionWidth FLOAT
 			SELECT
 				[FromM], [ToM], [GeomAlong]
 				,
-				v2fg([geomAlong]) as [vec]   -- v2fg: 2d vector from geom, from first to last point
+				ab2(xy0([geomAlong]), xy1([geomAlong])) as [vec]   -- vec from first to second point
 				,
-				xy0([geomAlong]) as [xy0]    -- v2fg: 2d vector of first point
+				xy0([geomAlong]) as [xy0]    -- v2fg: xy of first point
 				,
 				v3f2(xy0([geomAlong])) as [xyz0]	-- v3f2: 3d vector of 2d vector, with z=0
 			FROM 
