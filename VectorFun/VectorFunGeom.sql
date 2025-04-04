@@ -447,3 +447,26 @@ FUNCTION GeomCrossSections(@geom GEOM, @SectionStep FLOAT64, @SectionWidth FLOAT
 )
 END
 ;
+
+
+
+
+-- "Linear referencing" by units of measure. Accept negative @len (meaning starting from the end) and return endpoints if out of bounds.
+FUNCTION point_at_line_len(@line GEOM, @len FLOAT64) GEOM AS
+(
+	CASE 
+		WHEN @len >= 0 THEN GeomCoordLine(@line, Bound(@len, 0, GeomLength(@line, 0), true))
+		ELSE GeomCoordLine(@line, Bound(GeomLength(@line, 0)-@len, 0, GeomLength(@line, 0), true))
+	END
+)
+END;
+
+-- "Linear referencing" by ratio (0.5 is midpoint). Accept negative @ratio (meaning starting from the end) and return endpoints if out of bounds.
+FUNCTION point_at_line_ratio(@line GEOM, @ratio FLOAT64) GEOM AS
+(
+	CASE 
+		WHEN @ratio >= 0 THEN GeomCoordLine(@line, Bound(@ratio, 0, 1, true) * GeomLength(@line, 0))
+		ELSE GeomCoordLine(@line, Bound(1 - @ratio, 0, 1, true) * GeomLength(@line, 0))
+	END
+)
+END;
