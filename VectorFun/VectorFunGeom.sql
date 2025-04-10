@@ -542,3 +542,38 @@ FROM
 )
 END;
 
+
+FUNCTION BetterSegments2(@g) TABLE AS 
+(
+SELECT
+	[Branch], 
+	[Coord], 
+	First([xy]) as [xy], 
+	First([xyNext]) as [xyNext], 
+	First([seg_vec]) as [seg_vec], 
+	First([seg_len]) as [seg_len],
+	Sum(Coalesce([len], 0)) as [prev_len]
+FROM
+
+	(
+	SELECT
+		[Branch], [Coord], [xy], [xyNext],
+		ab2([xy], [xyNext]) as [seg_vec],
+		norm2(ab2([xy], [xyNext])) as [seg_len]
+	FROM	
+		CALL GeomToSegments(@g)
+	)
+	LEFT JOIN
+	(
+	SELECT
+		[Coord] as [bCoord], norm2(ab2([xy], [xyNext])) as [len]
+	FROM	
+		CALL GeomToSegments(@g)
+	) 
+	ON [bCoord] < [Coord]
+GROUP BY
+	[Branch], 
+	[Coord]
+)
+END
+;
