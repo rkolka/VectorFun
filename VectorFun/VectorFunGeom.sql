@@ -577,3 +577,52 @@ GROUP BY
 )
 END
 ;
+
+
+
+-- ~~ ST_LineLocatePoint * ST_Length ~~ 
+FUNCTION ProjectOntoGeom(@g GEOM, @p GEOM) TABLE AS 
+(
+SELECT 
+	SPLIT (COLLECT [Coord], p, projection_line, along, across, seg_len, [prev_len] + [along] ORDER BY GeomLength(projection_line,0) ASC FETCH 1)
+FROM
+	(
+	SELECT
+		[Coord],
+		ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p) as p,
+		GeomMakeSegment(xy0(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
+		x2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as along,
+		y2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as across,
+		[prev_len],
+		[seg_len]
+	FROM
+		CALL BetterSegments2(@g)
+	)
+)
+END
+;
+
+
+
+
+-- == ST_LineLocatePoint * ST_Length == 
+FUNCTION LineLocatePointLen(@g GEOM, @p GEOM) FLOAT64 AS 
+(
+SELECT First([result]) 
+FROM 
+(
+SELECT 
+	SPLIT (COLLECT [prev_len] + [along] ORDER BY GeomLength(projection_line,0) ASC FETCH 1)
+FROM
+	(
+	SELECT
+		GeomMakeSegment(xy0(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
+		x2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as along,
+		[prev_len]
+	FROM
+		CALL BetterSegments2(@g)
+	)
+)
+)
+END
+;
