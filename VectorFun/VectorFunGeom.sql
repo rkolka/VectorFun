@@ -543,7 +543,7 @@ FROM
 END;
 
 
-FUNCTION BetterSegments2(@g) TABLE AS 
+FUNCTION BetterSegments2(@g GEOM) TABLE AS 
 (
 SELECT
 	[Branch], 
