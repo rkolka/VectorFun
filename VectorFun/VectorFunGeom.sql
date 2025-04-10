@@ -459,6 +459,9 @@ END
 
 
 
+--VALUE @line GEOM = StringWktGeom('Linestring(1 2, 3 7, 4 3, 6 6)');
+--VALUE @len FLOAT64 = 2.3;
+--VALUE @ratio FLOAT64 = 0.8;
 
 -- "Linear referencing" by units of measure. Accept negative @len (meaning starting from the end) and return endpoints if out of bounds.
 FUNCTION point_at_line_len(@line GEOM, @len FLOAT64) GEOM AS
@@ -479,3 +482,59 @@ FUNCTION point_at_line_ratio(@line GEOM, @ratio FLOAT64) GEOM AS
 	END
 )
 END;
+
+
+
+-- splits line at @len.
+FUNCTION split_line_at_len(@line GEOM, @len FLOAT64) TABLE AS
+(
+SELECT 
+	CASE 
+		WHEN [half] = 0 THEN GeomPartLine(@line, 0, [split_len])
+		ELSE 				 GeomPartLine(@line, [split_len], [geom_len])
+	END as [split_line]
+FROM
+	(
+	SELECT
+		[geom_len]
+		,
+		CASE
+			WHEN @len >= 0 THEN Bound(@len,              0, [geom_len], true)
+			ELSE                Bound([geom_len] - @len, 0, [geom_len], true) 
+		END as [split_len]
+	FROM
+		(VALUES ( GeomLength(@line, 0) ) AS ([geom_len])) as [gl] 
+	) AS [lengths]
+	CROSS JOIN
+	(VALUES (0), (1) as ([half])) as [halfs]
+
+)
+END;
+
+
+-- splits line at @ratio.
+FUNCTION split_line_at_ratio(@line GEOM, @ratio FLOAT64) TABLE AS
+(
+SELECT 
+	CASE 
+		WHEN [half] = 0 THEN GeomPartLine(@line, 0, [split_len])
+		ELSE 				 GeomPartLine(@line, [split_len], [geom_len])
+	END as [split_line]
+FROM
+	(
+	SELECT
+		[geom_len]
+		,
+		CASE
+			WHEN @ratio >= 0 THEN Bound([geom_len]*@ratio,     0, [geom_len], true)
+			ELSE                  Bound([geom_len]*(1-@ratio), 0, [geom_len], true) 
+		END as [split_len]
+	FROM
+		(VALUES ( GeomLength(@line, 0) ) AS ([geom_len])) as [gl] 
+	) AS [lengths]
+	CROSS JOIN
+	(VALUES (0), (1) as ([half])) as [halfs]
+
+)
+END;
+
