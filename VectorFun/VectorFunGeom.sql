@@ -626,3 +626,33 @@ FROM
 )
 END
 ;
+
+
+FUNCTION LineMakeSplitLine(@g GEOM, @p GEOM, @len FLOAT64) GEOM AS 
+(
+SELECT 
+	 GeomMakeSegment( 	
+		add2([result], scale2([unit_perp_vec], -@len) ),
+		add2([result], scale2([unit_perp_vec],  @len) )
+		)
+FROM 
+(
+SELECT 
+	SPLIT (COLLECT [XY], [unit_perp_vec], add2([XY], scale2([unit_seg_vec], [along])) ORDER BY [along] ASC FETCH 1)
+FROM
+	(
+	SELECT
+		[XY], 
+		perp2(hat2([seg_vec])) as [unit_perp_vec],
+		hat2([seg_vec]) as [unit_seg_vec],
+		ProjectOntoSegment2([XY], [XYNext], xy0(@p) ) as [projected_point],
+		x2(AlongAcross2( [XY], [XYNext], xy0(@p) )) as [along],
+		y2(AlongAcross2( [XY], [XYNext], xy0(@p) )) as [accross],
+		[prev_len]
+	FROM
+		CALL GeomToSegmentsBetter(@g)
+	)
+)
+)
+END
+;
