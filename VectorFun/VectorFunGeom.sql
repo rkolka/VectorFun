@@ -170,7 +170,7 @@ FUNCTION GeomProjectOntoSegment(@g GEOM, @p GEOM) FLOAT64X2 AS
 					ab2(xy0(@g),xy0(@p)) 
 				)
 				,
-				v2(0,1)
+				v2(0,norm2(v2fg(@g))) 
 			)
 		)
 	)	
@@ -628,27 +628,51 @@ END
 ;
 
 
+
 FUNCTION LineMakeSplitLine(@g GEOM, @p GEOM, @len FLOAT64) GEOM AS 
 (
 SELECT 
 	 GeomMakeSegment( 	
-		add2([result], scale2([unit_perp_vec], -@len) ),
-		add2([result], scale2([unit_perp_vec],  @len) )
+		add2([projected_point], scale2([unit_perp_vec], -@len) ),
+		add2([projected_point], scale2([unit_perp_vec],  @len) )
 		)
 FROM 
 (
 SELECT 
-	SPLIT (COLLECT [XY], [unit_perp_vec], add2([XY], scale2([unit_seg_vec], [along])) ORDER BY [along] ASC FETCH 1)
+	SPLIT (COLLECT [unit_perp_vec], [projected_point] ORDER BY norm2(ab2([projected_point], xy0(@p))) ASC FETCH 1)
 FROM
 	(
 	SELECT
 		[XY], 
 		perp2(hat2([seg_vec])) as [unit_perp_vec],
-		hat2([seg_vec]) as [unit_seg_vec],
-		ProjectOntoSegment2([XY], [XYNext], xy0(@p) ) as [projected_point],
-		x2(AlongAcross2( [XY], [XYNext], xy0(@p) )) as [along],
-		y2(AlongAcross2( [XY], [XYNext], xy0(@p) )) as [accross],
-		[prev_len]
+		ProjectOntoSegment2([XY], [XYNext], xy0(@p) ) as [projected_point]
+	FROM
+		CALL GeomToSegmentsBetter(@g)
+	)
+)
+)
+END
+;
+
+--VALUE @g GEOM = StringWktGeom('Linestring(33 22, 44 22, 44 33, 55 44)');
+--
+--VALUE @p GEOM = StringWktGeom('Point(50 39)');
+--VALUE @len FLOAT64 = 0.707;
+
+
+
+FUNCTION LineMakeProjectedPoint(@g GEOM, @p GEOM) GEOM AS 
+(
+SELECT 
+	 GeomMakePoint( [projected_point] )
+FROM 
+(
+SELECT 
+	SPLIT (COLLECT [projected_point] ORDER BY norm2(ab2([projected_point], xy0(@p))) ASC FETCH 1)
+FROM
+	(
+	SELECT
+		ProjectOntoSegment2([XY], [XYNext], xy0(@p) ) as [projected_point]
 	FROM
 		CALL GeomToSegmentsBetter(@g)
 	)

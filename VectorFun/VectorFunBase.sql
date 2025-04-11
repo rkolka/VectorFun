@@ -692,10 +692,10 @@ FUNCTION ProjectOntoSegment2(@a FLOAT64X2, @b FLOAT64X2, @p FLOAT64X2) FLOAT64X2
 			clamp(
 				VectorDot(
 					hat2(ab2(@a, @b)),
-					ab2(@a,@p) 
+					ab2(@a, @p) 
 				)
 				,
-				v2(0,1)
+				v2(0,norm2(ab2(@a, @b)))
 			)
 		)
 	)	
