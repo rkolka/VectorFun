@@ -159,7 +159,7 @@ END
 ;
 
 -- "Project" P on G (segment from 1st to last coord), snap to endpoints of G if P is farther
-FUNCTION ProjectOntoSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
+FUNCTION GeomProjectOntoSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	add2(xy0(@g),
 		scale2(
@@ -180,7 +180,7 @@ END
 
 
 -- Project P along G (segment from 1st to last coord), 
-FUNCTION ProjectAlongSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
+FUNCTION GeomProjectAlongSegment(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
 	add2(xy0(@g),
 		scale2(
@@ -211,8 +211,8 @@ FROM
 	(
 	SELECT
 		[Coord],
-		ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p) as p,
-		GeomMakeSegment(xy0(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
+		GeomProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p) as p,
+		GeomMakeSegment(xy0(@p), GeomProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
 		x2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as along,
 		y2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as across,
 		norm2(ab2([XY], [XYNext])) as len
@@ -225,17 +225,17 @@ FROM
 END
 ;
 
-FUNCTION ProjectionLineToSegment(@g GEOM, @p GEOM) GEOM AS
+FUNCTION GeomProjectionLineToSegment(@g GEOM, @p GEOM) GEOM AS
 (
-	GeomMakeSegment(xy0(@p), ProjectOntoSegment(@g, @p))
+	GeomMakeSegment(xy0(@p), GeomProjectOntoSegment(@g, @p))
 )
 END
 ;
 
 
-FUNCTION ProjectionLineToGeom(@g GEOM, @p GEOM) GEOM AS
+FUNCTION GeomProjectionLineToGeom(@g GEOM, @p GEOM) GEOM AS
 (
-	GeomMakeSegment(xy0(@p), ProjectOntoSegment(@g, @p))
+	GeomMakeSegment(xy0(@p), GeomProjectOntoSegment(@g, @p))
 )
 END
 ;
@@ -282,7 +282,7 @@ END
 ;
 
   
-FUNCTION AzimuthSegment(@g GEOM) FLOAT64 AS 
+FUNCTION GeomAzimuthSegment(@g GEOM) FLOAT64 AS 
 (
 	57.2958 * Atan2((VectorValue(GeomCoordXY(@g, 1),0) - VectorValue(GeomCoordXY(@g, 0),0)), (VectorValue(GeomCoordXY(@g, 1),1) - VectorValue(GeomCoordXY(@g, 0),1)))
 )
@@ -543,7 +543,7 @@ FROM
 END;
 
 
-FUNCTION BetterSegments2(@g GEOM) TABLE AS 
+FUNCTION GeomToSegmentsBetter(@g GEOM) TABLE AS 
 (
 SELECT
 	[Branch], 
@@ -589,14 +589,14 @@ FROM
 	(
 	SELECT
 		[Coord],
-		ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p) as p,
-		GeomMakeSegment(xy0(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
+		GeomProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p) as p,
+		GeomMakeSegment(xy0(@p), GeomProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
 		x2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as along,
 		y2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as across,
 		[prev_len],
 		[seg_len]
 	FROM
-		CALL BetterSegments2(@g)
+		CALL GeomToSegmentsBetter(@g)
 	)
 )
 END
@@ -616,11 +616,11 @@ SELECT
 FROM
 	(
 	SELECT
-		GeomMakeSegment(xy0(@p), ProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
+		GeomMakeSegment(xy0(@p), GeomProjectOntoSegment(GeomMakeSegment([XY], [XYNext]), @p)) as projection_line,
 		x2(CoordsInGeomsSystem(GeomMakeSegment([XY], [XYNext]), @p)) as along,
 		[prev_len]
 	FROM
-		CALL BetterSegments2(@g)
+		CALL GeomToSegmentsBetter(@g)
 	)
 )
 )
