@@ -453,18 +453,22 @@ FUNCTION AffineTransform2(@v FLOAT64X2, @igt FLOAT64X2, @jgt FLOAT64X2, @Ogt FLO
 END
 ;
 
--- 
-FUNCTION RotateCoordTransform2(@v FLOAT64X2, @igt FLOAT64X2) FLOAT64X2 AS
+-- given a vector v and a "baseline" of new i_hat
+-- return v-s coords in new orthonormal coord system
+FUNCTION RotateBase2(@v FLOAT64X2, @base FLOAT64X2) FLOAT64X2 AS
 (	
 	LinearTransform2(
-		setz3(@v, 1), 
+		@v, 
 		-- transpose is the inverse if orhtonormal 
-		v2(x2(hat2(@igt)), x2(perp2(hat2(@igt)))), 
-		v2(y2(hat2(@igt)), y2(perp2(hat2(@igt))))
+		v2(x2(hat2(@base)), -y2(hat2(@base))), 
+		v2(y2(hat2(@base)),  x2(hat2(@base)))
 	)
 )
 END
 ;
+
+
+
 
 
 FUNCTION AffineTransform3(@v FLOAT64X3, @igt FLOAT64X3, @jgt FLOAT64X3, @kgt FLOAT64X3, @Ogt FLOAT64X3) FLOAT64X3 AS
@@ -666,3 +670,52 @@ FUNCTION αβOfIntersection(@point1 FLOAT64X2, @vec1 FLOAT64X2, @point2 FLOAT64X
 END
 ;
 
+-- given segment ab from @a to @b 
+-- Return coords of P Along and Across of ab
+-- 
+FUNCTION AlongAcross2(@a FLOAT64X2, @b FLOAT64X2, @p FLOAT64X2) FLOAT64X2 AS 
+(
+	RotateBase2(
+		ab2(@a,@p), 
+		ab2(@a,@b)
+		)	
+)
+END
+;
+
+-- "Project" P onto ab in 2D, snap to a or b if P is farther
+FUNCTION ProjectOntoSegment2(@a FLOAT64X2, @b FLOAT64X2, @p FLOAT64X2) FLOAT64X2 AS 
+(
+	add2(@a,
+		scale2(
+			hat2(ab2(@a, @b)),
+			clamp(
+				VectorDot(
+					hat2(ab2(@a, @b)),
+					ab2(@a,@p) 
+				)
+				,
+				v2(0,1)
+			)
+		)
+	)	
+)
+END
+;
+
+
+-- Project P along ab in 2D
+FUNCTION ProjectAlongSegment2(@a FLOAT64X2, @b FLOAT64X2, @p FLOAT64X2) FLOAT64X2 AS 
+(
+	add2(@a,
+		scale2(
+			hat2(ab2(@a, @b)),
+			VectorDot(
+				hat2(ab2(@a, @b)),
+				ab2(@a,@p) 
+			)
+		)
+	)	
+)
+END
+;

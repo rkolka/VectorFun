@@ -150,7 +150,7 @@ END
 -- Can call FUNCTION PAlongAcrossG(@g GEOM, @p GEOM) FLOAT64X2 AS 
 FUNCTION CoordsInGeomsSystem(@g GEOM, @p GEOM) FLOAT64X2 AS 
 (
-	RotateCoordTransform2(
+	RotateBase2(
 		ab2(xy0(@g),xy0(@p)), 
 		v2fg(@g)
 		)	
@@ -581,7 +581,7 @@ END
 
 
 -- ~~ ST_LineLocatePoint * ST_Length ~~ 
-FUNCTION ProjectOntoGeom(@g GEOM, @p GEOM) TABLE AS 
+FUNCTION ProjectOntoGeomBetter(@g GEOM, @p GEOM) TABLE AS 
 (
 SELECT 
 	SPLIT (COLLECT [Coord], p, projection_line, along, across, seg_len, [prev_len] + [along] ORDER BY GeomLength(projection_line,0) ASC FETCH 1)
