@@ -236,6 +236,29 @@ END
 -- Cross product in 3D. Returns vector perpendicular to both @a and @b. 
 -- VectorCross(<valuex3>, <valuex3>)
 
+FUNCTION norm_sq2(@a FLOAT64X2) FLOAT64 AS
+(
+	pow(x2(@a), 2) + pow(y2(@a), 2)
+)
+END 
+;
+
+
+FUNCTION norm_sq3(@a FLOAT64X2) FLOAT64 AS
+(
+	pow(x3(@a), 2) + pow(y3(@a), 2) + pow(z3(@a), 2)
+)
+END 
+;
+
+FUNCTION norm_sq4(@a FLOAT64X2) FLOAT64 AS
+(
+	pow(x4(@a), 2) + pow(y4(@a), 2) + pow(z4(@a), 2) + pow(w4(@a), 2)
+)
+END 
+;
+
+
 -- The length of vector, norm
 FUNCTION norm2(@a FLOAT64X2) FLOAT64 AS
 (
