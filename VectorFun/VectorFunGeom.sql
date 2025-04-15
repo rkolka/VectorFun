@@ -458,10 +458,18 @@ END
 ;
 
 
-
+--
 --VALUE @line GEOM = StringWktGeom('Linestring(1 2, 3 7, 4 3, 6 6)');
 --VALUE @len FLOAT64 = 2.3;
 --VALUE @ratio FLOAT64 = 0.8;
+--
+--VALUE @len1 FLOAT64 = -3.3;
+--VALUE @len2 FLOAT64 = 116.3;
+--
+--VALUE @ratio1 FLOAT64 = -0.2;
+--VALUE @ratio2 FLOAT64 = 0.3;
+
+
 
 -- "Linear referencing" by units of measure. Accepts negative and returns endpoints if out of bounds
 FUNCTION point_at_line_len(@line GEOM, @len FLOAT64) GEOM AS
@@ -469,7 +477,7 @@ FUNCTION point_at_line_len(@line GEOM, @len FLOAT64) GEOM AS
 	GeomMakePoint(
 	CASE 
 		WHEN @len >= 0 THEN GeomCoordLine(@line, Bound(@len, 0, GeomLength(@line, 0), true))
-		ELSE GeomCoordLine(@line, Bound(GeomLength(@line, 0)-@len, 0, GeomLength(@line, 0), true))
+		ELSE GeomCoordLine(@line, Bound(GeomLength(@line, 0)+@len, 0, GeomLength(@line, 0), true))
 	END
 	)
 )
@@ -481,12 +489,67 @@ FUNCTION point_at_line_ratio(@line GEOM, @ratio FLOAT64) GEOM AS
 	GeomMakePoint(
 	CASE 
 		WHEN @ratio >= 0 THEN GeomCoordLine(@line, Bound(@ratio, 0, 1, true) * GeomLength(@line, 0))
-		ELSE GeomCoordLine(@line, Bound(1 - @ratio, 0, 1, true) * GeomLength(@line, 0))
+		ELSE GeomCoordLine(@line, Bound(1 + @ratio, 0, 1, true) * GeomLength(@line, 0))
 	END
 	)
 )
 END;
 
+
+
+
+-- splits line at @len.
+FUNCTION line_part_by_len(@line GEOM, @len1 FLOAT64, @len2 FLOAT64) GEOM AS
+(
+SELECT 
+	GeomPartLine(@line, [len1], [len2])
+FROM
+	(
+	SELECT
+		[geom_len]
+		,
+		CASE
+			WHEN @len1 >= 0 THEN Bound(@len1,              0, [geom_len], true)
+			ELSE                 Bound([geom_len] + @len1, 0, [geom_len], true) 
+		END as [len1]
+		,
+		CASE
+			WHEN @len2 >= 0 THEN Bound(@len2,              0, [geom_len], true)
+			ELSE                 Bound([geom_len] + @len2, 0, [geom_len], true) 
+		END as [len2]
+	FROM
+		(VALUES ( GeomLength(@line, 0) ) AS ([geom_len])) as [gl] 
+	) AS [lengths]
+)
+END;
+
+
+
+
+-- splits line at @len.
+FUNCTION line_part_by_ratio(@line GEOM, @ratio1 FLOAT64, @ratio2 FLOAT64) GEOM AS
+(
+SELECT 
+	GeomPartLine(@line, [len1], [len2])
+FROM
+	(
+	SELECT
+		[geom_len]
+		,
+		CASE
+			WHEN @ratio1 >= 0 THEN Bound([geom_len]*@ratio1,     0, [geom_len], true)
+			ELSE                   Bound([geom_len]*(1+@ratio1), 0, [geom_len], true) 
+		END as [len1]
+		,
+		CASE
+			WHEN @ratio2 >= 0 THEN Bound([geom_len]*@ratio2,     0, [geom_len], true)
+			ELSE                   Bound([geom_len]*(1+@ratio2), 0, [geom_len], true) 
+		END as [len2]
+	FROM
+		(VALUES ( GeomLength(@line, 0) ) AS ([geom_len])) as [gl] 
+	) AS [lengths]
+)
+END;
 
 
 -- splits line at @len.
@@ -504,7 +567,7 @@ FROM
 		,
 		CASE
 			WHEN @len >= 0 THEN Bound(@len,              0, [geom_len], true)
-			ELSE                Bound([geom_len] - @len, 0, [geom_len], true) 
+			ELSE                Bound([geom_len] + @len, 0, [geom_len], true) 
 		END as [split_len]
 	FROM
 		(VALUES ( GeomLength(@line, 0) ) AS ([geom_len])) as [gl] 
@@ -531,7 +594,7 @@ FROM
 		,
 		CASE
 			WHEN @ratio >= 0 THEN Bound([geom_len]*@ratio,     0, [geom_len], true)
-			ELSE                  Bound([geom_len]*(1-@ratio), 0, [geom_len], true) 
+			ELSE                  Bound([geom_len]*(1+@ratio), 0, [geom_len], true) 
 		END as [split_len]
 	FROM
 		(VALUES ( GeomLength(@line, 0) ) AS ([geom_len])) as [gl] 
