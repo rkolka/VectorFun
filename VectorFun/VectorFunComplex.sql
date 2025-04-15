@@ -17,7 +17,8 @@ FUNCTION ComplexInversePP(@a FLOAT64X2) FLOAT64X2 AS v2( 1 / x2(@a), -y2(@a) ) E
 FUNCTION ComplexMultPP(@a FLOAT64X2, @b FLOAT64X2) FLOAT64X2 AS v2( x2(@a)*x2(@b), y2(@b) + y2(@a) ) END ;
 FUNCTION ComplexDivPP(@a FLOAT64X2, @b FLOAT64X2) FLOAT64X2  AS v2( x2(@a)/x2(@b), y2(@b) - y2(@a) ) END ;
 
-
+-- implementation is the same in both representations, flip the sign of the second component.
+FUNCTION ComplexConjugate(@a FLOAT64X2) FLOAT64X2 AS v2( x2(@a) , -1 * y2(@a) ) END ;
 
 FUNCTION ComplexXofP(@a FLOAT64X2) FLOAT64 AS x2(@a)*Cos(y2(@a)) END ;
 FUNCTION ComplexYofP(@a FLOAT64X2) FLOAT64 AS x2(@a)*Sin(y2(@a)) END ;
