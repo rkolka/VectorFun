@@ -68,3 +68,19 @@ FUNCTION PosDirAB(@a FLOAT64x4, @b FLOAT64x4) FLOAT64x4 AS
 END
 ;
 
+-- projects @p onto @g and returns geom's posdir at that point
+FUNCTION PosDirOnGeom(@g GEOM, @p FLOAT64X2, @normalize BOOLEAN) FLOAT64X4 AS 
+(
+SELECT 
+	SPLIT (COLLECT pd_from_pair([pos], [dir]) ORDER BY norm2(ab2([pos], @p)) ASC FETCH 1)
+FROM
+	(
+	SELECT
+		CASE WHEN @normalize THEN hat2(ab2([XY], [XYNext])) ELSE ab2([XY], [XYNext]) END AS [dir],
+		ProjectOntoSegment2([XY], [XYNext], @p ) as [pos]
+	FROM
+		CALL GeomToSegments(@g)
+	)
+)
+END
+;
