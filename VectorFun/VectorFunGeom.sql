@@ -743,3 +743,26 @@ FROM
 )
 END
 ;
+
+
+FUNCTION GeomLineBetweenCoords(@g GEOM, @from INT64, @to INT64) GEOM AS 
+(
+SELECT
+	GeomNormalize(GeomMergeLines([geom_seg]), 0) as [line]
+FROM
+
+	(
+	SELECT
+		[Branch], [Coord], [xy], [xyNext],
+		ab2([xy], [xyNext]) as [seg_vec],
+		GeomMakeSegment([xy], [xyNext]) as [geom_seg]
+	FROM	
+		CALL GeomToSegments(@g)
+	WHERE
+		[Coord] >= @from
+		and
+		[Coord] < @to
+	)
+)
+END
+;
